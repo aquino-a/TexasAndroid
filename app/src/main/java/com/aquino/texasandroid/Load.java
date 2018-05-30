@@ -8,14 +8,13 @@ import android.os.Bundle;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 
 public class Load extends AppCompatActivity {
 
     public final static String USER_PREFERENCES = "1220099223454";
     private SharedPreferences mSharedPreferences;
+    private TexasLoginManager texasLoginManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +40,7 @@ public class Load extends AppCompatActivity {
 
     private void checkToken() throws IOException {
         String path = getResources().getString(R.string.token_check_path);
-        
+
         URI uri = new Uri.Builder()
 
 
