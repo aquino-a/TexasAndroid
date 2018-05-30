@@ -21,23 +21,21 @@ public class Load extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_load);
 
-        mSharedPreferences = getSharedPreferences(USER_PREFERENCES,MODE_PRIVATE);
-        if(mSharedPreferences == null)
-            startLoginPage();
+        if(texasLoginManager.validToken())
+            startMainPage();
 
-        String token = mSharedPreferences.getString("user_token",null);
-        if(token == null)
-            startLoginPage();
-
-        try {
-            checkToken();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        texasLoginManager.createValidToken();
 
 
     }
 
+    private void startMainPage() {
+            Intent intent = new Intent(this, );
+            startActivity(intent);
+            finish();
+        }
+    }
+/*
     private void checkToken() throws IOException {
         String path = getResources().getString(R.string.token_check_path);
 
@@ -55,5 +53,5 @@ public class Load extends AppCompatActivity {
         Intent intent = new Intent(this ,Login.class);
         startActivity(intent);
 
-    }
+    } */
 }
