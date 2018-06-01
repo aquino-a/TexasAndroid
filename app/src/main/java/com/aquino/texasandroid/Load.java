@@ -24,7 +24,8 @@ public class Load extends AppCompatActivity {
         if(texasLoginManager.validToken())
             startMainPage();
 
-        texasLoginManager.createValidToken();
+        texasLoginManager.startLoginPage();
+        finish();
 
 
     }
@@ -33,25 +34,6 @@ public class Load extends AppCompatActivity {
             Intent intent = new Intent(this, );
             startActivity(intent);
             finish();
-        }
-    }
-/*
-    private void checkToken() throws IOException {
-        String path = getResources().getString(R.string.token_check_path);
-
-        URI uri = new Uri.Builder()
-
-
-
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
-
 
     }
-
-    private void startLoginPage() {
-        Intent intent = new Intent(this ,Login.class);
-        startActivity(intent);
-
-    } */
 }

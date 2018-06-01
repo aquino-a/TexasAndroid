@@ -1,0 +1,54 @@
+package com.aquino.texasandroid;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+
+import java.util.logging.Logger;
+
+public class TexasPreferences {
+
+    private final static String USER_PREFERENCES = "1220099223454";
+    private SharedPreferences mSharedPreferences;
+    private Context packageContext;
+
+    private static TexasPreferences preferences;
+
+    public static TexasPreferences getInstance(Context packageContext) {
+        if(preferences == null)
+            preferences = new TexasPreferences();
+        preferences.setPackageContext(packageContext);
+        return preferences;
+    }
+    private boolean checkPreferences() {
+        mSharedPreferences = packageContext.getSharedPreferences(USER_PREFERENCES,packageContext.MODE_PRIVATE);
+        return mSharedPreferences == null;
+
+    }
+
+     public void saveToken(String token) {
+        if(checkPreferences())
+            Log.i(this.getClass().getName(),"Preferences were null.");
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString("token",token);
+        Log.i(this.getClass().getName(),"Added new token");
+    }
+
+    public String loadToken() throws NullPointerException {
+        String result =  mSharedPreferences.getString("token",null);
+        if(result == null)
+            throw new NullPointerException("There is no token");
+        Log.i(this.getClass().getName(), "Successfully loaded token");
+        return result;
+    }
+
+    public Context getPackageContext() {
+        return packageContext;
+    }
+
+    public void setPackageContext(Context packageContext) {
+        this.packageContext = packageContext;
+    }
+
+
+}
