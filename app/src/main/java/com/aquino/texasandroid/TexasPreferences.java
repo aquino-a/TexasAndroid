@@ -10,18 +10,19 @@ public class TexasPreferences {
 
     private final static String USER_PREFERENCES = "1220099223454";
     private SharedPreferences mSharedPreferences;
-    private Context packageContext;
+
 
     private static TexasPreferences preferences;
 
     public static TexasPreferences getInstance(Context packageContext) {
         if(preferences == null)
-            preferences = new TexasPreferences();
-        preferences.setPackageContext(packageContext);
+            preferences = new TexasPreferences(packageContext);
         return preferences;
     }
-    private boolean checkPreferences() {
+    private TexasPreferences(Context packageContext) {
         mSharedPreferences = packageContext.getSharedPreferences(USER_PREFERENCES,packageContext.MODE_PRIVATE);
+    }
+    private boolean checkPreferences() {
         return mSharedPreferences == null;
 
     }
@@ -42,13 +43,6 @@ public class TexasPreferences {
         return result;
     }
 
-    public Context getPackageContext() {
-        return packageContext;
-    }
-
-    public void setPackageContext(Context packageContext) {
-        this.packageContext = packageContext;
-    }
-
+//
 
 }

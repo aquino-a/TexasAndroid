@@ -31,27 +31,25 @@ public class TexasLoginManager {
 
 
     private TexasPreferences preferences;
-    private Context packageContext;
+
 
     private static TexasLoginManager texasLoginManager;
 
     public static TexasLoginManager getInstance(Context packageContext) {
         if(texasLoginManager == null)
             texasLoginManager = new TexasLoginManager(packageContext);
-        else texasLoginManager.setPackageContext(packageContext);
         return texasLoginManager;
     }
 
     private TexasLoginManager(Context packageContext){
         preferences = TexasPreferences.getInstance(packageContext);
-        this.packageContext = packageContext;
     }
 
 
 
-    public void startLoginPage() {
-        Intent intent = new Intent(this.packageContext, Login.class);
-        this.packageContext.startActivity(intent);
+    public void startLoginPage(Context packageContext) {
+        Intent intent = new Intent(packageContext, Login.class);
+        packageContext.startActivity(intent);
     }
 
 
@@ -140,12 +138,4 @@ public class TexasLoginManager {
         this.preferences = preferences;
     }
 
-    public Context getPackageContext() {
-        return packageContext;
-    }
-
-    public void setPackageContext(Context packageContext) {
-        this.packageContext = packageContext;
-        this.preferences.setPackageContext(packageContext);
-    }
 }
