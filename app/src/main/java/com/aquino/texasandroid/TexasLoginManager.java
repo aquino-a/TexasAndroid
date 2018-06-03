@@ -66,7 +66,7 @@ public class TexasLoginManager {
         return true;
     }
 
-    public String createValidToken(String username, String password) throws IOException {
+    public String createValidToken(String username, String password, Context packageContext) throws IOException {
 
         String path = packageContext.getResources().getString(R.string.token_check_path);
         String host =  packageContext.getResources().getString(R.string.service_host);
@@ -92,6 +92,7 @@ public class TexasLoginManager {
                 return findToken(con.getInputStream());
             } catch (MalformedURLException e) {
                 e.printStackTrace();
+                throw e;
 
             } catch (IOException e) {
                 e.printStackTrace();
