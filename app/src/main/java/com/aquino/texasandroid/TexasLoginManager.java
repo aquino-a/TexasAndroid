@@ -27,7 +27,7 @@ public class TexasLoginManager {
     private static final String mClientId="acme";
     private static final String mClientSecret ="secret";
     private static final String mClientCredentials = (mClientId +":" + mClientSecret);
-    private static final String cred64 = Base64.encodeToString(mClientCredentials.getBytes(),Base64.DEFAULT);
+    public static final String cred64 = Base64.encodeToString(mClientCredentials.getBytes(),Base64.DEFAULT);
 
 
     private TexasPreferences preferences;
@@ -138,4 +138,7 @@ public class TexasLoginManager {
         this.preferences = preferences;
     }
 
+    public String getToken() {
+        return preferences.loadToken();
+    }
 }

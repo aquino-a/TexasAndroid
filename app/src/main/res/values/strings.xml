@@ -20,4 +20,9 @@
     <!-- host -->
     <string name="service_host">10.0.2.2:8080</string>
     <string name="token_check_path">token</string>
+
+    <!--main-->
+    <string name="games_button_text">View Games</string>
+    <string name="profile_button_text">View Profile</string>
+    <string name="user_text_view">User: </string>
 </resources>
