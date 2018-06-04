@@ -1,14 +1,8 @@
-package com.aquino.texasandroid;
+package com.aquino.texasandroid.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URI;
 
 public class LoadActivity extends AppCompatActivity {
 

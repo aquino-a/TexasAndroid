@@ -1,9 +1,11 @@
-package com.aquino.texasandroid;
+package com.aquino.texasandroid.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class Login extends AppCompatActivity {
+import com.aquino.texasandroid.R;
+
+public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
