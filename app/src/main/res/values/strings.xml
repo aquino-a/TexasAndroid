@@ -25,4 +25,8 @@
     <string name="games_button_text">View Games</string>
     <string name="profile_button_text">View Profile</string>
     <string name="user_text_view">User: </string>
+
+    <!--games list -->
+    <string name="games_list_text">Active Games</string>
+    <string name="new_game_button_text">New Game</string>
 </resources>

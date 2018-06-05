@@ -1,5 +1,6 @@
 package com.aquino.texasandroid.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,8 @@ import com.aquino.texasandroid.R;
 import com.aquino.texasandroid.TexasLoginManager;
 import com.aquino.texasandroid.TexasRequestManager;
 import com.aquino.texasandroid.model.User;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         texasLoginManager = TexasLoginManager.getInstance(this);
         texasRequestManager = TexasRequestManager.getInstance(texasLoginManager.getToken(),this);
 
-        setupView();
+        setupView(this);
         setupUser();
 
 
@@ -41,12 +44,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void setupView() {
+    private void setupView(final Context packageContext) {
         mProfile = findViewById(R.id.profile_button);
         mProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(this, ProfileActivity.class);
+                Intent intent = new Intent(packageContext, ProfileActivity.class);
                 startActivity(intent);
             }
         });
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         mGames.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(this, GamesActivity,class);
+                Intent intent = new Intent(packageContext, GamesActivity.class);
                 startActivity(intent);
             }
         });
@@ -63,7 +66,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
     private void setupUser() {
-        User user = texasRequestManager.getUser();
+        try {
+            User user = texasRequestManager.getUser();
+            mUser.setText(String.format("Welcome, %s!",user.getUsername()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
 
 
 
