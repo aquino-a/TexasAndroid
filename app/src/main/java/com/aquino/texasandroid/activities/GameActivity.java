@@ -67,6 +67,7 @@ public class GameActivity extends AppCompatActivity {
             return texasRequestManager.pingServer(gameId);
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
 

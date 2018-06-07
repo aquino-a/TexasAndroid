@@ -6,9 +6,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
 
 import com.aquino.texasandroid.R;
 import com.aquino.texasandroid.TexasRequestManager;
+import com.aquino.texasandroid.model.GameInfo;
+import com.aquino.texasandroid.model.GameList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,6 +23,7 @@ public class GamesActivity extends AppCompatActivity {
 
     private LinearLayout mListLayout;
     private Button mNewGame;
+    private TextView mActiveGames;
     private TexasRequestManager texasRequestManager;
 
     public static final String GAME_ID_EXTRA =
@@ -55,7 +60,20 @@ public class GamesActivity extends AppCompatActivity {
         }
     }
 
-    private void addButtons(JSONArray gameList) {
+    private void addButtons(GameList gameList) {
+        mActiveGames.setText(String.format("Active Games: %d", gameList.getSize()));
+        LayoutParams lparams = new LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        for(GameInfo info : gameList.getList()) {
+            TextView game = new TextView(this);
+            game.setLayoutParams(lparams);
+            game.setText(
+                    String.format("Game ID: %d Title: %s", info.getGameId(),info.getTitle()));
+            game.setOnClickListener(new OpenGameClickListener(info.getGameId()));
+            mListLayout.addView(game);
+        }
+
+
         //add buttons
     }
 
@@ -73,6 +91,7 @@ public class GamesActivity extends AppCompatActivity {
             }
         });
         mListLayout = findViewById(R.id.games_list);
+        mActiveGames = findViewById(R.id.active_games_text);
 
     }
 
@@ -81,5 +100,20 @@ public class GamesActivity extends AppCompatActivity {
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra(GAME_ID_EXTRA, gameId);
         startActivity(intent);
+    }
+
+    private class OpenGameClickListener implements View.OnClickListener {
+
+        private long gameId;
+
+        OpenGameClickListener(long gameId) {
+            this.gameId = gameId;
+        }
+
+        @Override
+        public void onClick(View v) {
+            joinGame(gameId);
+
+        }
     }
 }

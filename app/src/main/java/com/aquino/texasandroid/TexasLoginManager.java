@@ -63,10 +63,10 @@ public class TexasLoginManager {
         return true;
     }
 
-    public String createValidToken(String username, String password, Context packageContext) throws IOException {
+    public String createValidToken(String username, String password) throws IOException {
 
-        String path = packageContext.getResources().getString(R.string.token_check_path);
-        String host =  packageContext.getResources().getString(R.string.service_host);
+        String path = "token";
+        String host =  "10.0.2.2:8080";
         Log.i(this.getClass().getName(),"Got username and password. Making request");
             URL url;
             try {

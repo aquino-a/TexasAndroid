@@ -49,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
         mProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(packageContext, ProfileActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(packageContext, ProfileActivity.class);
+//                startActivity(intent);
             }
         });
         mGames = findViewById(R.id.games_button);

@@ -4,8 +4,11 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.aquino.texasandroid.model.GameInfo;
+import com.aquino.texasandroid.model.GameList;
 import com.aquino.texasandroid.model.GameState;
 import com.aquino.texasandroid.model.Move;
+import com.aquino.texasandroid.model.NewUser;
 import com.aquino.texasandroid.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,6 +26,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class TexasRequestManager {
 
@@ -75,10 +81,19 @@ public class TexasRequestManager {
         }
     }
 
-    public JSONArray getGameList() throws IOException, JSONException {
+    public GameList getGameList() throws IOException, JSONException {
+        GameList result = new GameList();
+        List<GameInfo> list = new ArrayList<>();
         JSONObject json = new JSONObject(getResponse("/games","GET",null));
-        //TODO parse json and return the values
-        return null;
+        result.setSize(json.getInt("size"));
+        json = json.getJSONObject("list");
+        Iterator<String> it = json.keys();
+        while(it.hasNext()) {
+            list.add(objectMapper.readValue(json.getString(it.next()), GameInfo.class));
+        }
+        result.setList(list);
+
+        return result;
     }
 
     public long createNewGame() throws IOException {
@@ -97,6 +112,10 @@ public class TexasRequestManager {
     public void room(String action, long gameId) throws IOException {
         String path = String.format("/games/%d/%s",gameId,action);
         getResponse(path,"POST",null);
+    }
+
+    public void registerNewUser(NewUser newUser) throws IOException {
+        getResponse("/user/new","POST", newUser);
     }
 
 
@@ -158,6 +177,7 @@ public class TexasRequestManager {
             throw e;
         }
     }
+
 
 
 }
