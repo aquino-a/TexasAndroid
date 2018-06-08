@@ -65,6 +65,8 @@ public class TexasLoginManager {
 
     public String createValidToken(String username, String password) throws IOException {
 
+
+
         String path = "token";
         String host =  "10.0.2.2:8080";
         Log.i(this.getClass().getName(),"Got username and password. Making request");

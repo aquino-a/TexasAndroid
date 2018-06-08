@@ -53,6 +53,8 @@ public class RegisterActivity extends AppCompatActivity {
                 String passwordConfirm = mPasswordConfirm.getText().toString();
                 String email = mEmail.getText().toString();
 
+                //TODO add username + email check to server
+
                 try {
                     if(username.isEmpty())
                         throw new IOException("No username");
@@ -76,8 +78,6 @@ public class RegisterActivity extends AppCompatActivity {
                 Toast.makeText(v.getContext(),
                         "Check your email for confirmation link,\nthen login."
                         ,Toast.LENGTH_SHORT).show();
-
-
             }
         });
 
