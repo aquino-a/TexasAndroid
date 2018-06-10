@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -29,10 +30,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if(!texasLoginManager.validToken())
-            texasLoginManager.startLoginPage(this);
 
         texasLoginManager = TexasLoginManager.getInstance(this);
+        if(!texasLoginManager.validToken()) {
+            Log.i(this.getLocalClassName(),"no token");
+            //TODO make it start with activity and setup user onresult
+            texasLoginManager.startLoginPage(MainActivity.this);
+
+        }
+
+
         texasRequestManager = TexasRequestManager.getInstance(texasLoginManager.getToken(),this);
 
         setupView(this);
@@ -77,6 +84,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private void startLoginPage() {
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
     }
 
 }

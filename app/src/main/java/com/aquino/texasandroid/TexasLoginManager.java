@@ -56,8 +56,10 @@ public class TexasLoginManager {
         String token;
         try {
             token = preferences.loadToken();
+
             //TODO check token on server
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
+
             return false;
         }
         return true;
@@ -68,13 +70,13 @@ public class TexasLoginManager {
 
 
         String path = "token";
-        String host =  "10.0.2.2:8080";
+        String host =  "192.168.0.2";
         Log.i(this.getClass().getName(),"Got username and password. Making request");
             URL url;
             try {
                 url = new URL(new Uri.Builder()
                         .scheme("http")
-                        .authority(host)
+                        .encodedAuthority(host)
                         .appendPath(path)
                         .appendQueryParameter("grant_type","password")
                         .appendQueryParameter("username", username)
@@ -139,6 +141,13 @@ public class TexasLoginManager {
     }
 
     public String getToken() {
-        return preferences.loadToken();
+        try {
+            return preferences.loadToken();
+
+        } catch (NullPointerException e) {
+            Log.i(this.getClass().getName(),"NO TOKEN");
+            e.printStackTrace();
+            return null;
+        }
     }
 }

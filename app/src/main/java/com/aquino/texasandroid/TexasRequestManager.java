@@ -123,7 +123,7 @@ public class TexasRequestManager {
         try {
             URL url = new URL(new Uri.Builder()
                     .scheme("http")
-                    .authority(this.host)
+                    .encodedAuthority(this.host)
                     .appendPath(path)
                     .build().toString());
             HttpURLConnection con = (HttpURLConnection) url.openConnection();

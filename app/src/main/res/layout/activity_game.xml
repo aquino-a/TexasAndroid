@@ -35,14 +35,14 @@
             android:id="@+id/card_one_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/card_back"
+
             />
 
         <ImageView
             android:id="@+id/card_two_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/card_back"
+
             />
 
     </LinearLayout>

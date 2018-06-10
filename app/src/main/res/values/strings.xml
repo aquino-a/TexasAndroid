@@ -37,4 +37,7 @@
     <string name="password_confirm_hint">Confirm Password</string>
     <string name="email_hint">Email</string>
     <string name="action_register">Register</string>
+
+    <!-- game -->
+    <string name="game_title_default">Game Title</string>
 </resources>
