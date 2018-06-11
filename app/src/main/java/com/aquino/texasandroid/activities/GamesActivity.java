@@ -42,11 +42,6 @@ public class GamesActivity extends AppCompatActivity {
         setupView(this);
         populateList();
 
-
-
-
-
-
     }
 
     private void populateList() {
@@ -73,8 +68,6 @@ public class GamesActivity extends AppCompatActivity {
             mListLayout.addView(game);
         }
 
-
-        //add buttons
     }
 
     private void setupView(GamesActivity gamesActivity) {
@@ -96,7 +89,6 @@ public class GamesActivity extends AppCompatActivity {
     }
 
     private void joinGame(long gameId) {
-        //TODO join game
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra(GAME_ID_EXTRA, gameId);
         startActivity(intent);

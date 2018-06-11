@@ -40,4 +40,6 @@
 
     <!-- game -->
     <string name="game_title_default">Game Title</string>
+    <string name="fold_button_text">Fold</string>
+    <string name="bet_button_text">Bet</string>
 </resources>

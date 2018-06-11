@@ -1,5 +1,6 @@
 package com.aquino.texasandroid.activities;
 
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.aquino.texasandroid.R;
+import com.aquino.texasandroid.TexasAssetManager;
 import com.aquino.texasandroid.TexasRequestManager;
 import com.aquino.texasandroid.model.GameState;
 import com.aquino.texasandroid.model.Move;
@@ -53,16 +55,22 @@ public class GameActivity extends AppCompatActivity {
         mFold.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO contents for click action
+                try {
+                    texasRequestManager.fold(gameId);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
         mBet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO contents
+                //TODO contents, start bet fragment?
             }
         });
+        disableButtons();
+
     }
 
     private void joinGame() {
@@ -106,6 +114,41 @@ public class GameActivity extends AppCompatActivity {
             e.printStackTrace();
             return null;
         }
+    }
+
+
+    private class RefreshPage extends AsyncTask<Void, Void,GameState> {
+
+        @Override
+        protected GameState doInBackground(Void ... voids) {
+            //TODO setup ping request code
+            return ping();
+        }
+
+        @Override
+        protected void onPostExecute(GameState state) {
+
+            //TODO setup refresh
+            //TODO setup bet layout etc
+            if(state.getTurnUserId() == state.getUserId())
+                enableButtons();
+            //set cards
+            int[] cards = state.getCards();
+            mCardOne.setImageResource(getResources().getIdentifier(String.valueOf(cards[0]),"drawable",getPackageName()));
+            mCardTwo.setImageResource(getResources().getIdentifier(String.valueOf(cards[1]),"drawable",getPackageName()));
+
+
+        }
+    }
+
+    private void disableButtons() {
+        mBet.setEnabled(false);
+        mFold.setEnabled(false);
+    }
+
+    private void enableButtons() {
+        mFold.setEnabled(true);
+        mBet.setEnabled(true);
     }
 
 

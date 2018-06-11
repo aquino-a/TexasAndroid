@@ -37,12 +37,10 @@ public class TexasRequestManager {
 
     private static TexasRequestManager texasRequestManager;
 
-    public static TexasRequestManager getInstance(String token, Context packageContext) {
+    public static TexasRequestManager getInstance(String token) {
         if (texasRequestManager == null)
             texasRequestManager = new TexasRequestManager();
         texasRequestManager.setToken(token);
-        texasRequestManager.setHost(packageContext.getResources().getString(R.string.service_host));
-
         return texasRequestManager;
     }
 
@@ -52,6 +50,8 @@ public class TexasRequestManager {
 
     private TexasRequestManager() {
         objectMapper = new ObjectMapper();
+        List<String> list = TexasAssetManager.getInstance().getProperty("server.host");
+        host = list.get(0);
     }
 
 
@@ -73,8 +73,7 @@ public class TexasRequestManager {
 
     public User getUser() throws IOException {
         try {
-            //TODO add path on server to return user from principal
-            return objectMapper.readValue(getResponse("me", "GET",null), User.class);
+            return objectMapper.readValue(getResponse("/games/me", "GET",null), User.class);
         } catch (IOException e) {
             e.printStackTrace();
             throw e;
@@ -116,6 +115,10 @@ public class TexasRequestManager {
 
     public void registerNewUser(NewUser newUser) throws IOException {
         getResponse("/user/new","POST", newUser);
+    }
+
+    public GameState fold(long gameId) throws IOException {
+        return sendMove(new Move("FOLD", 0), gameId);
     }
 
 

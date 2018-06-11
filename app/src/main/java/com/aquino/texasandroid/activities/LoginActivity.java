@@ -1,5 +1,6 @@
 package com.aquino.texasandroid.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -20,8 +21,10 @@ public class LoginActivity extends AppCompatActivity {
     private TexasLoginManager loginManager;
     private Button mSignIn, mRegister;
     private EditText mPassword, mUsername;
+    private boolean mLastAttemptSuccess;
 
     public static final int REGISTER_CODE = 0;
+    public static final String SUCCESS_EXTRA = "com.aquino.texasandroid.success_extra";
 
 
     @Override
@@ -30,6 +33,15 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         loginManager = TexasLoginManager.getInstance(this);
         setupView();
+        mLastAttemptSuccess = savedInstanceState.getBoolean("success");
+        setupResult(mLastAttemptSuccess);
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle bundle) {
+        super.onSaveInstanceState(bundle);
+        bundle.putBoolean("success",mLastAttemptSuccess);
     }
 
     private void setupView() {
@@ -47,12 +59,16 @@ public class LoginActivity extends AppCompatActivity {
                     loginManager.createValidToken(username,password);
                     if(loginManager.validToken()) {
                         Log.i(getClass().getName(),"Token is ready.");
+                        mLastAttemptSuccess = true;
+                        setupResult(true);
+                    } else {
+                        setupResult(false);
+                        mLastAttemptSuccess = false;
                     }
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
         });
 
@@ -63,5 +79,14 @@ public class LoginActivity extends AppCompatActivity {
                 v.getContext().startActivity(intent);
             }
         });
+    }
+
+    private void setupResult(boolean outcome) {
+        Intent intent = new Intent();
+
+        intent.putExtra(SUCCESS_EXTRA, outcome);
+        if(outcome) {
+            setResult(Activity.RESULT_OK, intent);
+        }else setResult(Activity.RESULT_CANCELED,intent);
     }
 }

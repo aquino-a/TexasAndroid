@@ -7,6 +7,7 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.aquino.texasandroid.activities.LoginActivity;
+import com.aquino.texasandroid.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +19,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 public class TexasLoginManager {
 
@@ -26,8 +28,11 @@ public class TexasLoginManager {
     private static final String mClientCredentials = (mClientId +":" + mClientSecret);
     public static final String cred64 = Base64.encodeToString(mClientCredentials.getBytes(),Base64.DEFAULT);
 
+    private String host, path;
+
 
     private TexasPreferences preferences;
+    private TexasRequestManager texasRequestManager;
 
 
     private static TexasLoginManager texasLoginManager;
@@ -40,15 +45,12 @@ public class TexasLoginManager {
 
     private TexasLoginManager(Context packageContext){
         preferences = TexasPreferences.getInstance(packageContext);
+        List<String> list = TexasAssetManager.getInstance()
+                .getProperty("server.host","server.token-path");
+        host = list.get(0);
+        path = list.get(1);
+        texasRequestManager = TexasRequestManager.getSetupInstance();
     }
-
-
-
-    public void startLoginPage(Context packageContext) {
-        Intent intent = new Intent(packageContext, LoginActivity.class);
-        packageContext.startActivity(intent);
-    }
-
 
 
 
@@ -56,10 +58,11 @@ public class TexasLoginManager {
         String token;
         try {
             token = preferences.loadToken();
-
-            //TODO check token on server
+            User user = texasRequestManager.getUser();
+            //TODO fix exception message after debug
+            if(user == null)
+                throw new Exception("User null/token possible not valid");
         } catch (Exception e) {
-
             return false;
         }
         return true;
@@ -67,10 +70,6 @@ public class TexasLoginManager {
 
     public String createValidToken(String username, String password) throws IOException {
 
-
-
-        String path = "token";
-        String host =  "192.168.0.2";
         Log.i(this.getClass().getName(),"Got username and password. Making request");
             URL url;
             try {
@@ -150,4 +149,5 @@ public class TexasLoginManager {
             return null;
         }
     }
+
 }

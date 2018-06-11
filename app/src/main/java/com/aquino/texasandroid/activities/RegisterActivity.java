@@ -53,7 +53,6 @@ public class RegisterActivity extends AppCompatActivity {
                 String passwordConfirm = mPasswordConfirm.getText().toString();
                 String email = mEmail.getText().toString();
 
-                //TODO add username + email check to server
 
                 try {
                     if(username.isEmpty())
@@ -71,13 +70,15 @@ public class RegisterActivity extends AppCompatActivity {
 
                 try {
                     requestManager.registerNewUser(newUser);
+                    Toast.makeText(v.getContext(),
+                            "Check your email for confirmation link,\nthen login."
+                            ,Toast.LENGTH_SHORT).show();
+                    finish();
                 } catch (IOException e) {
                     e.printStackTrace();
                     Toast.makeText(v.getContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(v.getContext(),
-                        "Check your email for confirmation link,\nthen login."
-                        ,Toast.LENGTH_SHORT).show();
+
             }
         });
 

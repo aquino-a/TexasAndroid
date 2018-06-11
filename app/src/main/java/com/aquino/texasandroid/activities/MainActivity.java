@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.aquino.texasandroid.R;
+import com.aquino.texasandroid.TexasAssetManager;
 import com.aquino.texasandroid.TexasLoginManager;
 import com.aquino.texasandroid.TexasRequestManager;
 import com.aquino.texasandroid.model.User;
@@ -19,6 +20,8 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
+
+    public static final int LOGIN_REQUEST_CODE = 0;
 
     private Button mProfile, mGames;
     private TextView mUser;
@@ -31,23 +34,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        TexasAssetManager.makeInstance(this);
         texasLoginManager = TexasLoginManager.getInstance(this);
-        if(!texasLoginManager.validToken()) {
-            Log.i(this.getLocalClassName(),"no token");
-            //TODO make it start with activity and setup user onresult
-            texasLoginManager.startLoginPage(MainActivity.this);
+        if(texasLoginManager.validToken()) {
+            texasRequestManager = TexasRequestManager.getInstance(texasLoginManager.getToken());
+            setupView(this);
+            setupUser();
+        } else startLoginPage();
 
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if(requestCode == LOGIN_REQUEST_CODE) {
+            if(resultCode != RESULT_OK)
+                startLoginPage();
+            else if (intent.getBooleanExtra(LoginActivity.SUCCESS_EXTRA,false)) {
+                setupUser();
+            }
         }
-
-
-        texasRequestManager = TexasRequestManager.getInstance(texasLoginManager.getToken(),this);
-
-        setupView(this);
-        setupUser();
-
-
-
-
     }
 
 
@@ -80,15 +86,13 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
-
-
-
     }
 
     private void startLoginPage() {
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, LOGIN_REQUEST_CODE);
     }
+
+
 
 }
