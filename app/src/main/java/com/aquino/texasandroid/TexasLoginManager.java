@@ -19,6 +19,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.Buffer;
 import java.util.List;
 
 public class TexasLoginManager {
@@ -49,7 +50,7 @@ public class TexasLoginManager {
                 .getProperty("server.host","server.token-path");
         host = list.get(0);
         path = list.get(1);
-        texasRequestManager = TexasRequestManager.getSetupInstance();
+//        texasRequestManager = TexasRequestManager.getSetupInstance();
     }
 
 
@@ -57,14 +58,18 @@ public class TexasLoginManager {
     public boolean validToken() {
         String token;
         try {
+            Log.d(getClass().getName(),"Checking Token");
             token = preferences.loadToken();
+            texasRequestManager = TexasRequestManager.getInstance(token);
             User user = texasRequestManager.getUser();
             //TODO fix exception message after debug
             if(user == null)
                 throw new Exception("User null/token possible not valid");
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
+        Log.d(getClass().getName(),"Valid Token!");
         return true;
     }
 
@@ -76,7 +81,7 @@ public class TexasLoginManager {
                 url = new URL(new Uri.Builder()
                         .scheme("http")
                         .encodedAuthority(host)
-                        .appendPath(path)
+                        .appendEncodedPath(path)
                         .appendQueryParameter("grant_type","password")
                         .appendQueryParameter("username", username)
                         .appendQueryParameter("password",password)
@@ -86,8 +91,16 @@ public class TexasLoginManager {
                 con.setRequestMethod("POST");
                 con.setRequestProperty("Authorization", "Basic " + cred64);
                 con.connect();
-                if(!(con.getResponseCode() == 200))
+                if(!(con.getResponseCode() == 200)) {
+                    try(BufferedReader br
+                                = new BufferedReader(new InputStreamReader(con.getErrorStream()))) {
+                        for(String line = br.readLine();line != null; line = br.readLine()){
+                            System.out.println(line);
+                        }
+                    }
                     return null;
+                }
+
                 Log.i(this.getClass().getName(),"Reading response");
                 return findToken(con.getInputStream());
             } catch (MalformedURLException e) {
@@ -124,6 +137,7 @@ public class TexasLoginManager {
     }
 
     private String parseToken(String response) throws JSONException {
+        Log.d(getClass().getName(),response);
         JSONObject json = new JSONObject(response);
         String result = json.getString("access_token");
         preferences.saveToken(result);

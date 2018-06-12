@@ -33,8 +33,12 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         loginManager = TexasLoginManager.getInstance(this);
         setupView();
-        mLastAttemptSuccess = savedInstanceState.getBoolean("success");
-        setupResult(mLastAttemptSuccess);
+        if(savedInstanceState !=null){
+            mLastAttemptSuccess = savedInstanceState.getBoolean("success");
+            setupResult(mLastAttemptSuccess);
+        }
+
+
 
     }
 
@@ -55,29 +59,40 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String username = mUsername.getText().toString();
                 String password = mPassword.getText().toString();
+
                 try {
-                    loginManager.createValidToken(username,password);
+                    Thread getToken = new Thread(() -> {
+                        try {
+                            Log.i(getClass().getName(),"Getting token");
+                            loginManager.createValidToken(username,password);
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                    Log.d(getClass().getName(), "starting thread");
+                    getToken.start();
+                    getToken.join();
+                    Log.d(getClass().getName(), "token thread joined");
                     if(loginManager.validToken()) {
                         Log.i(getClass().getName(),"Token is ready.");
                         mLastAttemptSuccess = true;
                         setupResult(true);
                     } else {
+                        Log.i(getClass().getName(),"Token not valid");
                         setupResult(false);
                         mLastAttemptSuccess = false;
                     }
 
-                } catch (IOException e) {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         });
 
-        mRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), RegisterActivity.class);
-                v.getContext().startActivity(intent);
-            }
+        mRegister.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), RegisterActivity.class);
+            v.getContext().startActivity(intent);
         });
     }
 

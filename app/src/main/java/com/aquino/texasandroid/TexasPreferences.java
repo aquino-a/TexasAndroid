@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 public class TexasPreferences {
 
     private final static String USER_PREFERENCES = "1220099223454";
-    private SharedPreferences mSharedPreferences;
+    private volatile SharedPreferences mSharedPreferences;
 
 
     private static TexasPreferences preferences;
@@ -28,10 +28,12 @@ public class TexasPreferences {
     }
 
      public void saveToken(String token) {
+        Log.d(getClass().getName(),token);
         if(checkPreferences())
             Log.i(this.getClass().getName(),"Preferences were null.");
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putString("token",token);
+        editor.apply();
         Log.i(this.getClass().getName(),"Added new token");
     }
 

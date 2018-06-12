@@ -71,7 +71,7 @@ public class GamesActivity extends AppCompatActivity {
     }
 
     private void setupView(GamesActivity gamesActivity) {
-        mNewGame = findViewById(R.id.games_button);
+        mNewGame = findViewById(R.id.new_game_button);
         mNewGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

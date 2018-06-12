@@ -29,6 +29,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.RunnableFuture;
 
 public class TexasRequestManager {
 
@@ -123,28 +126,48 @@ public class TexasRequestManager {
 
 
     public String getResponse(String path, String requestMethod, Object json) throws IOException {
-        try {
-            URL url = new URL(new Uri.Builder()
-                    .scheme("http")
-                    .encodedAuthority(this.host)
-                    .appendPath(path)
-                    .build().toString());
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod(requestMethod);
-            con.setRequestProperty("Authorization", "Basic " + TexasLoginManager.cred64);
-            con.setRequestProperty("Authorization", "Bearer " + this.token);
+        return getReponseThread(path,requestMethod,json);
+    }
 
-            if(json != null)
-                objectMapper.writeValue(con.getOutputStream(),json);
-            //con.connect();
-            if (!(con.getResponseCode() == 200))
-                throw new IOException("Not 200");
-            Log.i(this.getClass().getName(), "Reading response");
-            return readStream(con.getInputStream());
-        } catch (IOException e) {
+    private String getReponseThread(String path, String requestMethod, Object json)
+            throws IOException {
+
+        RunnableFuture<String> rf = new FutureTask<String>(()->{
+            try {
+                URL url = new URL(new Uri.Builder()
+                        .scheme("http")
+                        .encodedAuthority(this.host)
+                        .encodedPath(path)
+                        .build().toString());
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod(requestMethod);
+                con.setRequestProperty("Authorization", "Basic " + TexasLoginManager.cred64);
+                con.setRequestProperty("Authorization", "Bearer " + this.token);
+
+                if(json != null)
+                    objectMapper.writeValue(con.getOutputStream(),json);
+                //con.connect();
+                if (!(con.getResponseCode() == 200))
+                    throw new IOException("Not 200");
+                Log.i(this.getClass().getName(), "Reading response at: " + path);
+                return readStream(con.getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw e;
+            }
+        });
+
+        Thread getReponseThread = new Thread(rf);
+        getReponseThread.start();
+        try {
+            getReponseThread.join();
+            return rf.get();
+        } catch (InterruptedException e) {
             e.printStackTrace();
-            throw e;
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
     private void addJson(OutputStream outputStream, String json) throws IOException {
