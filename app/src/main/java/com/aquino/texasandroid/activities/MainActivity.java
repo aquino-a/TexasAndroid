@@ -42,11 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    @Override
-    public void onStart() {
-        super.onStart();
-        checkAuthorization();
-    }
 
     private void checkAuthorization() {
         if(texasLoginManager.validToken()) {
@@ -58,9 +53,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if(requestCode == LOGIN_REQUEST_CODE) {
-            if(resultCode != RESULT_OK)
+                if(resultCode != RESULT_OK)
                 startLoginPage();
             else if (intent.getBooleanExtra(LoginActivity.SUCCESS_EXTRA,false)) {
+                checkAuthorization();
                 setupUser();
             }
         }
