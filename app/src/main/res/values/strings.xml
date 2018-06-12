@@ -42,4 +42,10 @@
     <string name="game_title_default">Game Title</string>
     <string name="fold_button_text">Fold</string>
     <string name="bet_button_text">Bet</string>
+    <string name="total_pot">Pot: </string>
+    <string name="amount_to_call">Amount to call: </string>
+    <string name="minimum_bet">Minimum bet: </string>
+    <string name="game_state">Game state: </string>
+    <string name="game_info_default">Game info</string>
+    <string name="call_button_text">Call</string>
 </resources>
