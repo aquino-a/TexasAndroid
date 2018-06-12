@@ -74,7 +74,7 @@ public class TexasRequestManager {
         this.host = host;
     }
 
-    public User getUser() throws IOException {
+    public User getUser() throws IOException, NullPointerException {
         try {
             return objectMapper.readValue(getResponse("/games/me", "GET",null), User.class);
         } catch (IOException e) {
@@ -117,7 +117,7 @@ public class TexasRequestManager {
     }
 
     public void registerNewUser(NewUser newUser) throws IOException {
-        getResponse("/user/new","POST", newUser);
+        addNewUser("/users/new","POST", newUser);
     }
 
     public GameState fold(long gameId) throws IOException {
@@ -126,12 +126,6 @@ public class TexasRequestManager {
 
 
     public String getResponse(String path, String requestMethod, Object json) throws IOException {
-        return getReponseThread(path,requestMethod,json);
-    }
-
-    private String getReponseThread(String path, String requestMethod, Object json)
-            throws IOException {
-
         RunnableFuture<String> rf = new FutureTask<String>(()->{
             try {
                 URL url = new URL(new Uri.Builder()
@@ -141,14 +135,17 @@ public class TexasRequestManager {
                         .build().toString());
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod(requestMethod);
-                con.setRequestProperty("Authorization", "Basic " + TexasLoginManager.cred64);
+//                con.setRequestProperty("Authorization", "Basic " + TexasLoginManager.cred64);
                 con.setRequestProperty("Authorization", "Bearer " + this.token);
 
+
+                //con.connect();
+                if (!(con.getResponseCode() == 200)){
+                    //TODO close
+                    throw new IOException("Not 200");
+                }
                 if(json != null)
                     objectMapper.writeValue(con.getOutputStream(),json);
-                //con.connect();
-                if (!(con.getResponseCode() == 200))
-                    throw new IOException("Not 200");
                 Log.i(this.getClass().getName(), "Reading response at: " + path);
                 return readStream(con.getInputStream());
             } catch (IOException e) {
@@ -169,6 +166,44 @@ public class TexasRequestManager {
         }
         return null;
     }
+
+    private void addNewUser(String path,String requestMethod, Object json) {
+
+        RunnableFuture<String> rf = new FutureTask<String>(()->{
+            try {
+                URL url = new URL(new Uri.Builder()
+                        .scheme("http")
+                        .encodedAuthority(this.host)
+                        .encodedPath(path)
+                        .build().toString());
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod(requestMethod);
+
+                //TODO manually write json to output stream, spring isn't getting right format
+                if(json != null)
+                    objectMapper.writeValue(con.getOutputStream(),json);
+                //con.connect();
+                if (!(con.getResponseCode() == 200)){
+                    //TODO close
+                    throw new IOException("Not 200");
+                }
+                Log.i(this.getClass().getName(), "Reading response at: " + path);
+                return readStream(con.getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw e;
+            }
+        });
+
+        Thread getReponseThread = new Thread(rf);
+        getReponseThread.start();
+        try {
+            getReponseThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void addJson(OutputStream outputStream, String json) throws IOException {
         try {

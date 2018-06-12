@@ -78,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
                         Log.i(getClass().getName(),"Token is ready.");
                         mLastAttemptSuccess = true;
                         setupResult(true);
+                        finish();
                     } else {
                         Log.i(getClass().getName(),"Token not valid");
                         setupResult(false);

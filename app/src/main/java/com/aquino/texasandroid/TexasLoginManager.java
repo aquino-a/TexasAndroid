@@ -65,7 +65,12 @@ public class TexasLoginManager {
             //TODO fix exception message after debug
             if(user == null)
                 throw new Exception("User null/token possible not valid");
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
+            preferences.clearToken();
+            return false;
+        } catch (IOException e) {
+            return false;
+        } catch(Exception e) {
             e.printStackTrace();
             return false;
         }

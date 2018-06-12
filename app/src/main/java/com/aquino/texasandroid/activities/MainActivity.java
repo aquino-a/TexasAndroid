@@ -36,13 +36,23 @@ public class MainActivity extends AppCompatActivity {
 
         TexasAssetManager.makeInstance(this);
         texasLoginManager = TexasLoginManager.getInstance(this);
+        setupView(this);
+        checkAuthorization();
+
+
+
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        checkAuthorization();
+    }
+
+    private void checkAuthorization() {
         if(texasLoginManager.validToken()) {
             texasRequestManager = TexasRequestManager.getInstance(texasLoginManager.getToken());
-            setupView(this);
             setupUser();
         } else startLoginPage();
-
-
     }
 
     @Override

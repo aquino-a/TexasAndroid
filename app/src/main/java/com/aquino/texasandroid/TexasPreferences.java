@@ -45,6 +45,10 @@ public class TexasPreferences {
         return result;
     }
 
-//
+    public void clearToken() {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.remove("token");
+        editor.apply();
+    }
 
 }
