@@ -30,6 +30,7 @@
     <!--games list -->
     <string name="games_list_text">Active Games</string>
     <string name="new_game_button_text">New Game</string>
+    <string name="show_games_button">Refresh</string>
 
     <!-- login/register -->
     <string name="username_hint">Username</string>

@@ -108,7 +108,7 @@ public class TexasRequestManager {
     }
     public GameState pingServer(long gameId) throws IOException {
         String path = String.format("/games/%d",gameId);
-        return objectMapper.readValue(getResponse("/games","GET",null),GameState.class);
+        return objectMapper.readValue(getResponse(path,"GET",null),GameState.class);
     }
 
     public void room(String action, long gameId) throws IOException {

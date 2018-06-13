@@ -1,6 +1,8 @@
 package com.aquino.texasandroid.activities;
 
 import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 
 import com.aquino.texasandroid.R;
 import com.aquino.texasandroid.TexasRequestManager;
+import com.aquino.texasandroid.fragments.GameListFragment;
 import com.aquino.texasandroid.model.GameInfo;
 import com.aquino.texasandroid.model.GameList;
 
@@ -18,13 +21,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.List;
 
 public class GamesActivity extends AppCompatActivity {
 
-    private LinearLayout mListLayout;
-    private Button mNewGame;
+    //private LinearLayout mListLayout;
+    private Button mNewGame, mRefresh;
     private TextView mActiveGames;
     private TexasRequestManager texasRequestManager;
+    private Fragment mFragment;
+    private List<GameInfo> mGameInfoList;
 
     public static final String GAME_ID_EXTRA =
             "com.aquino.texasandroid.activities.GamesActivity.game_id";
@@ -40,14 +46,34 @@ public class GamesActivity extends AppCompatActivity {
         if(texasRequestManager == null) {}
 
         setupView(this);
-        populateList();
+        setupFragment();
+
+        //populateList();
 
     }
 
-    private void populateList() {
-        //send request
+
+    private void setupFragment() {
+        FragmentManager fm = getSupportFragmentManager();
+        mFragment = fm.findFragmentById(R.id.fragment_container);
+        if(mFragment == null) {
+            mFragment = new GameListFragment();
+            fm.beginTransaction()
+                    .add(R.id.fragment_container,mFragment)
+                    .commit();
+        }
+    }
+
+    private void setList(Fragment fragment) {
+        GameListFragment glf = (GameListFragment) fragment;
+        GameListFragment.GameAdapter ga = glf.getGameAdapter();
+        ga.setGameInfoList(mGameInfoList);
+        ga.notifyDataSetChanged();
+    }
+
+    private void setupList() {
         try {
-            addButtons(texasRequestManager.getGameList());
+            mGameInfoList = texasRequestManager.getGameList().getList();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -55,37 +81,63 @@ public class GamesActivity extends AppCompatActivity {
         }
     }
 
-    private void addButtons(GameList gameList) {
-        mActiveGames.setText(String.format("Active Games: %d", gameList.getSize()));
-        LayoutParams lparams = new LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        for(GameInfo info : gameList.getList()) {
-            TextView game = new TextView(this);
-            game.setLayoutParams(lparams);
-            game.setText(
-                    String.format("Game ID: %d Title: %s", info.getGameId(),info.getTitle()));
-            game.setOnClickListener(new OpenGameClickListener(info.getGameId()));
-            mListLayout.addView(game);
-        }
+//    private void populateList() {
+//        //send request
+//        try {
+//            addButtons(texasRequestManager.getGameList());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
-    }
+//    private void addButtons(GameList gameList) {
+//        mActiveGames.setText(String.format("Active Games: %d", gameList.getSize()));
+//        LayoutParams lparams = new LayoutParams(
+//                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+//        for(GameInfo info : gameList.getList()) {
+//            TextView game = new TextView(this);
+//            game.setLayoutParams(lparams);
+//            game.setText(
+//                    String.format("Game ID: %d Title: %s", info.getGameId(),info.getTitle()));
+//            game.setOnClickListener(v -> {
+//                joinGame(info.getGameId());
+//            });
+//            mListLayout.addView(game);
+//        }
+//
+//    }
 
     private void setupView(GamesActivity gamesActivity) {
+        mActiveGames = findViewById(R.id.active_games_text);
         mNewGame = findViewById(R.id.new_game_button);
+        mRefresh = findViewById(R.id.show_games_button);
+
         mNewGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
                      long gameId = texasRequestManager.createNewGame();
-                    joinGame(gameId);
+                     refreshList();
+                    //joinGame(gameId);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
-        mListLayout = findViewById(R.id.games_list);
-        mActiveGames = findViewById(R.id.active_games_text);
 
+        mRefresh.setOnClickListener(v -> {
+            refreshList();
+        });
+        //mListLayout = findViewById(R.id.games_list);
+
+
+    }
+
+    private void refreshList() {
+        setupList();
+        setList(mFragment);
     }
 
     private void joinGame(long gameId) {
@@ -94,18 +146,18 @@ public class GamesActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private class OpenGameClickListener implements View.OnClickListener {
-
-        private long gameId;
-
-        OpenGameClickListener(long gameId) {
-            this.gameId = gameId;
-        }
-
-        @Override
-        public void onClick(View v) {
-            joinGame(gameId);
-
-        }
-    }
+//    private class OpenGameClickListener implements View.OnClickListener {
+//
+//        private long gameId;
+//
+//        OpenGameClickListener(long gameId) {
+//            this.gameId = gameId;
+//        }
+//
+//        @Override
+//        public void onClick(View v) {
+//            joinGame(gameId);
+//
+//        }
+//    }
 }

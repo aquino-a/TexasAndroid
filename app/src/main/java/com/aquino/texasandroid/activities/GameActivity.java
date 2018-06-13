@@ -55,27 +55,25 @@ public class GameActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        if(savedInstanceState.getLong("game_id") == 0) {
+        setupView();
+
+        if(savedInstanceState != null) {
+            gameId = savedInstanceState.getLong("game_id");
+        } else {
             gameId = getIntent().getLongExtra(GamesActivity.GAME_ID_EXTRA, -1);
             if(gameId == -1)
                 finish();
             joinGame();
-        } else {
-            gameId = savedInstanceState.getLong("game_id");
         }
 
-        setupView();
         setupRefresh();
     }
 
     private void setupRefresh() {
         timer = new Timer();
-        refresher = new RefreshPage();
-        refresh = new Runnable() {
-            @Override
-            public void run() {
-                refresher.execute();
-            }
+        refresh = () -> {
+            refresher = new RefreshPage();
+            refresher.execute();
         };
         startTimer();
     }
@@ -261,9 +259,21 @@ public class GameActivity extends AppCompatActivity
         setInfo(state);
 
         //set cards
-        int[] cards = state.getCards();
-        mCardOne.setImageResource(getResources().getIdentifier(cardToString(cards[0]),"drawable",getPackageName()));
-        mCardTwo.setImageResource(getResources().getIdentifier(cardToString(cards[1]),"drawable",getPackageName()));
+        setCards(state);
+
+
+    }
+
+    private void setCards(GameState state) {
+        if(state.getState().equals("NOROUND") || state.getState().equals("ENDROUND")) {
+            mCardOne.setImageResource(R.drawable.back_aqua);
+            mCardTwo.setImageResource(R.drawable.back_aqua);
+        } else {
+            int[] cards = state.getCards();
+            mCardOne.setImageResource(getResources().getIdentifier(cardToString(cards[0]),"drawable",getPackageName()));
+            mCardTwo.setImageResource(getResources().getIdentifier(cardToString(cards[1]),"drawable",getPackageName()));
+        }
+
 
     }
 
@@ -287,12 +297,14 @@ public class GameActivity extends AppCompatActivity
     private void addUsers(User[] users) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        mUserListContainer.removeAllViews();
         for(User user : users) {
             TextView userView= new TextView(this);
             userView.setLayoutParams(params);
             userView.setText(
                     String.format("%s%nMoney: %d ", user.getUsername(),user.getMoney()));
             userView.setOnClickListener(new ShowUserInfo(user));
+
             mUserListContainer.addView(userView);
         }
 
@@ -301,11 +313,13 @@ public class GameActivity extends AppCompatActivity
     private void disableButtons() {
         mBet.setEnabled(false);
         mFold.setEnabled(false);
+        mCall.setEnabled(false);
     }
 
     private void enableButtons() {
         mFold.setEnabled(true);
         mBet.setEnabled(true);
+        mCall.setEnabled(true);
     }
 
     private static final String cardToString(int num) {
