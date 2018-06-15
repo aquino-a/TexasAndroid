@@ -127,14 +127,12 @@ public class GameActivity extends AppCompatActivity
             public void onClick(View v) {
                 disableButtons();
                 openBetFragment();
-                //TODO contents, start bet fragment?
             }
         });
 
         mCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO call
                 try {
                     texasRequestManager.sendMove(
                             new Move("BET", lastState.getAmountToCall()),gameId);
@@ -143,13 +141,11 @@ public class GameActivity extends AppCompatActivity
                 }
             }
         });
-
-        disableButtons();
+        turnOver();
 
     }
 
     private void openBetFragment() {
-        //TODO change to dialog fragment
         BetFragment fragment = new BetFragment();
         fragment.setArguments(makeBetBundle());
         fragment.setBetListener(this);
@@ -214,7 +210,6 @@ public class GameActivity extends AppCompatActivity
 
     @Override
     public void onFinish(int amount) {
-        //TODO implement after bet select
         try {
             texasRequestManager.sendMove(new Move("BET",amount),gameId);
             turnOver();
@@ -225,7 +220,6 @@ public class GameActivity extends AppCompatActivity
 
     @Override
     public void onCancel() {
-        //TODO on cancel
         enableButtons();
     }
 
@@ -241,8 +235,6 @@ public class GameActivity extends AppCompatActivity
         protected void onPostExecute(GameState state) {
             lastState = state;
             refreshPage(state);
-            //TODO setup refresh
-            //TODO setup bet layout etc
         }
     }
 

@@ -42,7 +42,6 @@ public class GameListFragment extends Fragment {
     }
 
     private void updateUI() {
-        //TODO addd list and addapter
         mGameAdapter = new GameAdapter();
         mRecyclerView.setAdapter(mGameAdapter);
     }

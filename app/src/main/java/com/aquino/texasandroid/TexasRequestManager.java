@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -117,6 +118,7 @@ public class TexasRequestManager {
     }
 
     public void registerNewUser(NewUser newUser) throws IOException {
+        String json = objectMapper.writeValueAsString(newUser);
         addNewUser("/users/new","POST", newUser);
     }
 
@@ -180,8 +182,13 @@ public class TexasRequestManager {
                 con.setRequestMethod(requestMethod);
 
                 //TODO manually write json to output stream, spring isn't getting right format
-                if(json != null)
+                if(json != null) {
+                    con.setDoOutput(true);
+                    con.setRequestProperty( "Content-Type", "application/json" );
                     objectMapper.writeValue(con.getOutputStream(),json);
+                    //writeJson(json,os);
+                }
+
                 //con.connect();
                 if (!(con.getResponseCode() == 200)){
                     //TODO close
@@ -217,6 +224,15 @@ public class TexasRequestManager {
         } catch (IOException e) {
             e.printStackTrace();
             throw e;
+        }
+    }
+
+    private void writeJson(OutputStream os, String json) {
+        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os))) {
+            bw.write(json);
+            bw.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

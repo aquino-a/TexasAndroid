@@ -42,7 +42,6 @@ public class GamesActivity extends AppCompatActivity {
 
         texasRequestManager = TexasRequestManager.getSetupInstance();
 
-        //TODO do something if no requestmanager, but maybe redundant
         if(texasRequestManager == null) {}
 
         setupView(this);
