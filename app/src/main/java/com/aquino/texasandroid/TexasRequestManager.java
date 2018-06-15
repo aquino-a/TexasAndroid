@@ -103,6 +103,10 @@ public class TexasRequestManager {
         return Long.parseLong(getResponse("/games","POST",null));
     }
 
+    public GameState startGame(long gameId) throws IOException {
+        return sendMove(new Move("START",0),gameId);
+    }
+
     public GameState sendMove(Move move, long gameId) throws IOException {
         String path = String.format("/games/%d/move",gameId);
         return objectMapper.readValue(getResponse(path,"POST", move),GameState.class);

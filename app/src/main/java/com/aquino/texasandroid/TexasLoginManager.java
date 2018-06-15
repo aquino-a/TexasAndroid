@@ -53,6 +53,10 @@ public class TexasLoginManager {
 //        texasRequestManager = TexasRequestManager.getSetupInstance();
     }
 
+    public void clearToken() {
+        preferences.clearToken();
+    }
+
 
 
     public boolean validToken() {
