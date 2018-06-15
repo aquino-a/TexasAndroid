@@ -49,4 +49,5 @@
     <string name="game_state">Game state: </string>
     <string name="game_info_default">Game info</string>
     <string name="call_button_text">Call</string>
+    <string name="time_remaining">Time Remaining: </string>
 </resources>

@@ -38,11 +38,19 @@
             >
 
             <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/game_info"
+            android:text="@string/game_info_default"
+            />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/game_info"
-                android:text="@string/game_info_default"
+                android:id="@+id/time_left"
+                android:text="@string/time_remaining"
                 />
+
 
             <!--have one only
 

@@ -1,6 +1,7 @@
 package com.aquino.texasandroid.activities;
 
 import android.os.AsyncTask;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -32,12 +33,15 @@ public class GameActivity extends AppCompatActivity
 
     private LinearLayout mUserListContainer;
     private Button mFold, mBet,mCall;
-    private TextView mGameInfo, mTitle, mPot, mCallAmount,mMinimumBet,mGameState;
+    private TextView mGameInfo, mTimeRemaining, mTitle, mPot, mCallAmount,mMinimumBet,mGameState;
     private ImageView mCardOne, mCardTwo;
     private Timer timer;
     private RefreshPage refresher;
     private Runnable refresh;
     private GameState lastState;
+
+    private BetFragment fragment;
+    private CountDownTimer turnTimer;
 
     private TexasRequestManager texasRequestManager;
     private long gameId;
@@ -104,6 +108,7 @@ public class GameActivity extends AppCompatActivity
         mTitle = findViewById(R.id.game_title_text);
 
         mGameInfo = findViewById(R.id.game_info);
+        mTimeRemaining = findViewById(R.id.time_left);
 
 //        mPot = findViewById(R.id.total_pot);
 //        mCallAmount = findViewById(R.id.amount_to_call);
@@ -146,7 +151,7 @@ public class GameActivity extends AppCompatActivity
     }
 
     private void openBetFragment() {
-        BetFragment fragment = new BetFragment();
+        fragment = new BetFragment();
         fragment.setArguments(makeBetBundle());
         fragment.setBetListener(this);
         fragment.show(getSupportFragmentManager(),"bet_amount");
@@ -161,6 +166,7 @@ public class GameActivity extends AppCompatActivity
 
 
     private void turnOver() {
+        turnTimer.cancel();
         disableButtons();
         startTimer();
     }
@@ -243,6 +249,7 @@ public class GameActivity extends AppCompatActivity
             enableButtons();
             stopRefresh();
             showYourTurnToast();
+            timeTurn();
         }
         //user list
         addUsers(state.getUsers());
@@ -253,6 +260,30 @@ public class GameActivity extends AppCompatActivity
         //set cards
         setCards(state);
 
+
+    }
+
+    private void timeTurn() {
+        turnTimer = new CountDownTimer(30000,1000) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                mTimeRemaining.setText("Time remaining: " + millisUntilFinished / 1000);
+            }
+
+            @Override
+            public void onFinish() {
+                if(fragment != null && fragment.isVisible())
+                    fragment.dismiss();
+                try {
+                    texasRequestManager.fold(gameId);
+                    mTimeRemaining.setText("Not your turn");
+                    turnOver();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
 
     }
 
