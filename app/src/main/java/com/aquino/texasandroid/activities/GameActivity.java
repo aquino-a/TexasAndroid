@@ -194,7 +194,7 @@ public class GameActivity extends AppCompatActivity
                 }
             }
         });
-        turnOver();
+        disableButtons();
 
     }
 
@@ -443,6 +443,10 @@ public class GameActivity extends AppCompatActivity
         super.onBackPressed();
         try {
             texasRequestManager.room("leave",gameId);
+            if(turnTimer != null )
+                turnTimer.cancel();
+            if(timer != null)
+                timer.cancel();
         } catch (IOException e) {
             e.printStackTrace();
         }

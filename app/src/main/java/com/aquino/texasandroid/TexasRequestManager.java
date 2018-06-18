@@ -109,6 +109,7 @@ public class TexasRequestManager {
 
     public GameState sendMove(Move move, long gameId) throws IOException {
         String path = String.format("/games/%d/move",gameId);
+//        String json = objectMapper.writeValueAsString(move);
         return objectMapper.readValue(getResponse(path,"POST", move),GameState.class);
     }
     public GameState pingServer(long gameId) throws IOException {
@@ -144,14 +145,23 @@ public class TexasRequestManager {
 //                con.setRequestProperty("Authorization", "Basic " + TexasLoginManager.cred64);
                 con.setRequestProperty("Authorization", "Bearer " + this.token);
 
-
-                //con.connect();
-                if (!(con.getResponseCode() == 200)){
-                    //TODO close
-                    throw new IOException("Not 200");
-                }
-                if(json != null)
+                if(json != null) {
+                    con.setDoOutput(true);
+                    con.setRequestProperty( "Content-Type", "application/json" );
+//                    writeJson(con.getOutputStream(),json);
                     objectMapper.writeValue(con.getOutputStream(),json);
+                    con.connect();
+                }
+
+
+                int code = con.getResponseCode();
+                if (! (code== 200)){
+
+                    //TODO close
+                    throw new IOException("Not 200: " + code);
+                }
+
+
                 Log.i(this.getClass().getName(), "Reading response at: " + path);
                 return readStream(con.getInputStream());
             } catch (IOException e) {
