@@ -37,11 +37,12 @@ public class GameActivity extends AppCompatActivity
     private LinearLayout mUserListContainer;
     private Button mFold, mBet,mCall;
     private TextView mGameInfo, mTimeRemaining, mTitle, mPot, mCallAmount,mMinimumBet,mGameState;
-    private ImageView mCardOne, mCardTwo;
+    private ImageView mCardOne, mCardTwo,mFlopOne,mFlopTwo,mFlopThree,mTurn,mRiver;
     private Timer timer;
     private RefreshPage refresher;
     private Runnable refresh;
     private GameState lastState;
+    private String cardBackColor = "back_red";
 
     private BetFragment fragment;
     private CountDownTimer turnTimer;
@@ -147,6 +148,11 @@ public class GameActivity extends AppCompatActivity
         mTitle = findViewById(R.id.game_title_text);
         mCardOne = findViewById(R.id.card_one_image);
         mCardTwo = findViewById(R.id.card_two_image);
+        mFlopOne = findViewById(R.id.flop_one_image);
+        mFlopTwo = findViewById(R.id.flop_two_image);
+        mFlopThree = findViewById(R.id.flop_three_image);
+        mTurn = findViewById(R.id.turn_image);
+        mRiver = findViewById(R.id.river_image);
         mTitle = findViewById(R.id.game_title_text);
 
         mGameInfo = findViewById(R.id.game_info);
@@ -330,14 +336,26 @@ public class GameActivity extends AppCompatActivity
     }
 
     private void setCards(GameState state) {
-        if(state.getState().equals("NOROUND") || state.getState().equals("ENDROUND")) {
-            mCardOne.setImageResource(R.drawable.back_aqua);
-            mCardTwo.setImageResource(R.drawable.back_aqua);
-        } else {
+        String gameState = state.getState();
+//        if(gameState.equals("NOROUND") || gameState.equals("ENDROUND")) {
+//            mCardOne.setImageResource(R.drawable.back_aqua);
+//            mCardTwo.setImageResource(R.drawable.back_aqua);
+//            mFlopOne.setImageResource(R.drawable.back_aqua);
+//            mFlopTwo.setImageResource(R.drawable.back_aqua);
+//            mFlopThree.setImageResource(R.drawable.back_aqua);
+//            mTurn.setImageResource(R.drawable.back_aqua);
+//            mRiver.setImageResource(R.drawable.back_aqua);
+//        } else {
             int[] cards = state.getCards();
             mCardOne.setImageResource(getResources().getIdentifier(cardToString(cards[0]),"drawable",getPackageName()));
             mCardTwo.setImageResource(getResources().getIdentifier(cardToString(cards[1]),"drawable",getPackageName()));
-        }
+                mFlopOne.setImageResource(getResources().getIdentifier(cardToString(cards[2]),"drawable",getPackageName()));
+                mFlopTwo.setImageResource(getResources().getIdentifier(cardToString(cards[3]),"drawable",getPackageName()));
+                mFlopThree.setImageResource(getResources().getIdentifier(cardToString(cards[4]),"drawable",getPackageName()));
+                mTurn.setImageResource(getResources().getIdentifier(cardToString(cards[5]),"drawable",getPackageName()));
+                mRiver.setImageResource(getResources().getIdentifier(cardToString(cards[6]),"drawable",getPackageName()));
+
+//        }
 
 
     }
@@ -387,7 +405,9 @@ public class GameActivity extends AppCompatActivity
         mCall.setEnabled(true);
     }
 
-    private static final String cardToString(int num) {
+    private final String cardToString(int num) {
+        if(num== 0)
+            return cardBackColor;
         if(num < 100 || num > 413 || num % 100 > 13)
             throw new IllegalArgumentException("Number isn't in the range");
         int suit = num/100;
@@ -418,5 +438,13 @@ public class GameActivity extends AppCompatActivity
         saveInstanceState.putLong("game_id",gameId);
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        try {
+            texasRequestManager.room("leave",gameId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

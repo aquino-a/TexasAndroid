@@ -185,7 +185,6 @@ public class TexasRequestManager {
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod(requestMethod);
 
-                //TODO manually write json to output stream, spring isn't getting right format
                 if(json != null) {
                     con.setDoOutput(true);
                     con.setRequestProperty( "Content-Type", "application/json" );
