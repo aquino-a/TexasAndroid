@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.aquino.texasandroid.R;
 import com.aquino.texasandroid.TexasLoginManager;
@@ -81,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                         finish();
                     } else {
                         Log.i(getClass().getName(),"Token not valid");
+                        loginUnsuccessful();
                         setupResult(false);
                         mLastAttemptSuccess = false;
                     }
@@ -95,6 +97,12 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(intent);
         });
+    }
+
+    private void loginUnsuccessful() {
+        Toast.makeText(this,
+                "Login unsuccessful\nCheck username/password"
+                ,Toast.LENGTH_SHORT).show();
     }
 
     private void setupResult(boolean outcome) {

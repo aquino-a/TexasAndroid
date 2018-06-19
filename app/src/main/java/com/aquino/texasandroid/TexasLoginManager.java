@@ -46,7 +46,10 @@ public class TexasLoginManager {
 
     private TexasLoginManager(Context packageContext){
         preferences = TexasPreferences.getInstance(packageContext);
-        List<String> list = TexasAssetManager.getInstance()
+        TexasAssetManager assetManager = TexasAssetManager.getInstance();
+        if(assetManager == null)
+            assetManager = TexasAssetManager.makeInstance(packageContext);
+        List<String> list = assetManager
                 .getProperty("server.host","server.token-path");
         host = list.get(0);
         path = list.get(1);

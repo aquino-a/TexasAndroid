@@ -3,6 +3,7 @@ package com.aquino.texasandroid.fragments;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -28,9 +29,15 @@ public class BetFragment extends DialogFragment {
     private int minimumBet, callAmount;
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         minimumBet = savedInstanceState.getInt("min");
         callAmount = savedInstanceState.getInt("call");
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+
         int minValue;
         if(callAmount != 0) {
             minValue = callAmount/minimumBet;

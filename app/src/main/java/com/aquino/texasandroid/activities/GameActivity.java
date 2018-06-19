@@ -192,6 +192,7 @@ public class GameActivity extends AppCompatActivity
                 try {
                     texasRequestManager.sendMove(
                             new Move("BET", lastState.getAmountToCall()),gameId);
+                    turnOver();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

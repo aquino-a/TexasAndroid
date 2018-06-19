@@ -199,10 +199,11 @@ public class TexasRequestManager {
                     con.setDoOutput(true);
                     con.setRequestProperty( "Content-Type", "application/json" );
                     objectMapper.writeValue(con.getOutputStream(),json);
+                    con.connect();
                     //writeJson(json,os);
                 }
 
-                //con.connect();
+
                 if (!(con.getResponseCode() == 200)){
                     //TODO close
                     throw new IOException("Not 200");
