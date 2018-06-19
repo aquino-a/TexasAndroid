@@ -75,6 +75,9 @@ public class GameActivity extends AppCompatActivity
                     texasRequestManager.startGame(gameId);
                 } catch (IOException e) {
                     e.printStackTrace();
+                } catch (NullPointerException e) {
+                    notEnoughPlayersToast();
+                    e.printStackTrace();
                 }
                 return true;
             default:
@@ -358,6 +361,12 @@ public class GameActivity extends AppCompatActivity
 //        }
 
 
+    }
+
+    private void notEnoughPlayersToast() {
+        Toast.makeText(this,
+                "Not enough players to start"
+                ,Toast.LENGTH_SHORT).show();
     }
 
     private void showYourTurnToast() {

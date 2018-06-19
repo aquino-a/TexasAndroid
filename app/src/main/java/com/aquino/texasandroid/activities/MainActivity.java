@@ -80,8 +80,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if(requestCode == LOGIN_REQUEST_CODE) {
-                if(resultCode != RESULT_OK)
+            if(resultCode != RESULT_OK)
                 startLoginPage();
+            else if(intent.getBooleanExtra(LoginActivity.EXIT_EXTRA, false)) {
+                finish();
+
+            }
             else if (intent.getBooleanExtra(LoginActivity.SUCCESS_EXTRA,false)) {
                 checkAuthorization();
                 setupUser();

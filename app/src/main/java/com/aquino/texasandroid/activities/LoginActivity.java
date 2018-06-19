@@ -25,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public static final int REGISTER_CODE = 0;
     public static final String SUCCESS_EXTRA = "com.aquino.texasandroid.success_extra";
-
+    public static final String EXIT_EXTRA = "com.aquino.texasandroid.exit_extra";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,5 +104,14 @@ public class LoginActivity extends AppCompatActivity {
         if(outcome) {
             setResult(Activity.RESULT_OK, intent);
         }else setResult(Activity.RESULT_CANCELED,intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Intent intent = new Intent();
+        intent.putExtra(EXIT_EXTRA, true);
+        setResult(Activity.RESULT_OK,intent);
+        super.onBackPressed();
     }
 }

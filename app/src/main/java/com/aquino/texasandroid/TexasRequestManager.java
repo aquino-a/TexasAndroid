@@ -107,7 +107,7 @@ public class TexasRequestManager {
         return sendMove(new Move("START",0),gameId);
     }
 
-    public GameState sendMove(Move move, long gameId) throws IOException {
+    public GameState sendMove(Move move, long gameId) throws IOException, NullPointerException {
         String path = String.format("/games/%d/move",gameId);
 //        String json = objectMapper.writeValueAsString(move);
         return objectMapper.readValue(getResponse(path,"POST", move),GameState.class);
