@@ -31,8 +31,8 @@ public class BetFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        minimumBet = savedInstanceState.getInt("min");
-        callAmount = savedInstanceState.getInt("call");
+        minimumBet = getArguments().getInt("min");
+        callAmount = getArguments().getInt("call");
     }
 
     @Override

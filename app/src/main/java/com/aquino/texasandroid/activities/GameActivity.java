@@ -119,19 +119,26 @@ public class GameActivity extends AppCompatActivity
             joinGame();
         }
 
-        setupRefresh();
+        startTimer();
     }
 
-    private void setupRefresh() {
+//    private void setupRefresh() {
+//        timer = new Timer();
+//        refresh = () -> {
+//            refresher = new RefreshPage();
+//            refresher.execute();
+//        };
+//        startTimer();
+//    }
+
+    private void startTimer() {
         timer = new Timer();
+
         refresh = () -> {
             refresher = new RefreshPage();
             refresher.execute();
         };
-        startTimer();
-    }
 
-    private void startTimer() {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
