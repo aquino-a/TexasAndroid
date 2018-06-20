@@ -297,7 +297,7 @@ public class GameActivity extends AppCompatActivity
     }
 
     private void refreshPage(GameState state) {
-        if(state.getTurnUserId() == state.getUserId()) {
+        if(checkTurn(state)) {
             enableButtons();
             stopRefresh();
             showYourTurnToast();
@@ -313,6 +313,14 @@ public class GameActivity extends AppCompatActivity
         setCards(state);
 
 
+    }
+
+    private boolean checkTurn(GameState state) {
+        if(state.getState().equals("NOROUND"))
+            return false;
+        if(state.getCards()[0] == 0  || state.getCards()[1] == 0)
+            return false;
+        return state.getUserId() == state.getTurnUserId();
     }
 
     private void timeTurn() {

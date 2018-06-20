@@ -80,33 +80,6 @@ public class GamesActivity extends AppCompatActivity {
         }
     }
 
-//    private void populateList() {
-//        //send request
-//        try {
-//            addButtons(texasRequestManager.getGameList());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-//    private void addButtons(GameList gameList) {
-//        mActiveGames.setText(String.format("Active Games: %d", gameList.getSize()));
-//        LayoutParams lparams = new LayoutParams(
-//                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-//        for(GameInfo info : gameList.getList()) {
-//            TextView game = new TextView(this);
-//            game.setLayoutParams(lparams);
-//            game.setText(
-//                    String.format("Game ID: %d Title: %s", info.getGameId(),info.getTitle()));
-//            game.setOnClickListener(v -> {
-//                joinGame(info.getGameId());
-//            });
-//            mListLayout.addView(game);
-//        }
-//
-//    }
 
     private void setupView(GamesActivity gamesActivity) {
         mActiveGames = findViewById(R.id.active_games_text);
