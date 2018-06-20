@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,9 +36,9 @@ public class GameActivity extends AppCompatActivity
 
 
     private LinearLayout mUserListContainer;
-    private Button mFold, mBet,mCall;
-    private TextView mGameInfo, mTimeRemaining, mTitle, mPot, mCallAmount,mMinimumBet,mGameState;
-    private ImageView mCardOne, mCardTwo,mFlopOne,mFlopTwo,mFlopThree,mTurn,mRiver;
+    private Button mFold, mBet, mCall;
+    private TextView mGameInfo, mTimeRemaining, mTitle, mPot, mCallAmount, mMinimumBet, mGameState;
+    private ImageView mCardOne, mCardTwo, mFlopOne, mFlopTwo, mFlopThree, mTurn, mRiver;
     private Timer timer;
     private RefreshPage refresher;
     private Runnable refresh;
@@ -50,12 +51,12 @@ public class GameActivity extends AppCompatActivity
     private TexasRequestManager texasRequestManager;
     private long gameId;
 
-    private static final List<String> FACE =Collections.unmodifiableList(
-            Arrays.asList("","TWO","THREE","FOUR","FIVE","SIX","SEVEN","EIGHT",
-                    "NINE","TEN","JACK","QUEEN","KING","ACE"));
+    private static final List<String> FACE = Collections.unmodifiableList(
+            Arrays.asList("", "two", "three", "four", "five", "six", "seven", "eight",
+                    "nine", "ten", "jack", "queen", "king", "ace"));
 
     private static final List<String> SUIT = Collections.unmodifiableList(
-            Arrays.asList("","CLUB","DIAMOND","HEART","SPADE"));
+            Arrays.asList("", "club", "diamond", "heart", "spade"));
 
     private static final int BET_REQUEST_CODE = 1;
 
@@ -89,15 +90,17 @@ public class GameActivity extends AppCompatActivity
     public boolean onPrepareOptionsMenu(Menu menu) {
 
         MenuItem item = menu.findItem(R.id.start_game);
-
-        if (lastState != null && (lastState.getState().equals("NOROUND"))) {
-            item.setEnabled(true);
-            item.getIcon().setAlpha(255);
-        } else {
-            // disabled
-            item.setEnabled(false);
-            item.getIcon().setAlpha(130);
-        }
+        item.setEnabled(false);
+        item.getIcon().setAlpha(130);
+        //starting game is automatic for now
+//        if (lastState != null && (lastState.getState().equals("NOROUND"))) {
+//            item.setEnabled(true);
+//            item.getIcon().setAlpha(255);
+//        } else {
+//            // disabled
+//            item.setEnabled(false);
+//            item.getIcon().setAlpha(130);
+//        }
         return true;
     }
 
@@ -107,11 +110,11 @@ public class GameActivity extends AppCompatActivity
         setContentView(R.layout.activity_game);
         setupView();
 
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             gameId = savedInstanceState.getLong("game_id");
         } else {
             gameId = getIntent().getLongExtra(GamesActivity.GAME_ID_EXTRA, -1);
-            if(gameId == -1)
+            if (gameId == -1)
                 finish();
             joinGame();
         }
@@ -134,7 +137,7 @@ public class GameActivity extends AppCompatActivity
             public void run() {
                 runPingInterval();
             }
-        },0,5000);
+        }, 0, 5000);
     }
 
     private void runPingInterval() {
@@ -191,7 +194,7 @@ public class GameActivity extends AppCompatActivity
             public void onClick(View v) {
                 try {
                     texasRequestManager.sendMove(
-                            new Move("BET", lastState.getAmountToCall()),gameId);
+                            new Move("BET", lastState.getAmountToCall()), gameId);
                     turnOver();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -206,13 +209,13 @@ public class GameActivity extends AppCompatActivity
         fragment = new BetFragment();
         fragment.setArguments(makeBetBundle());
         fragment.setBetListener(this);
-        fragment.show(getSupportFragmentManager(),"bet_amount");
+        fragment.show(getSupportFragmentManager(), "bet_amount");
     }
 
     private Bundle makeBetBundle() {
         Bundle bundle = new Bundle();
         bundle.putInt("min", lastState.getMinBet());
-        bundle.putInt("call",lastState.getAmountToCall());
+        bundle.putInt("call", lastState.getAmountToCall());
         return bundle;
     }
 
@@ -225,7 +228,7 @@ public class GameActivity extends AppCompatActivity
 
     private void joinGame() {
         try {
-            texasRequestManager.room("join",gameId);
+            texasRequestManager.room("join", gameId);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -233,7 +236,7 @@ public class GameActivity extends AppCompatActivity
 
     private void leaveGame() {
         try {
-            texasRequestManager.room("leave",gameId);
+            texasRequestManager.room("leave", gameId);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -241,7 +244,7 @@ public class GameActivity extends AppCompatActivity
 
     private GameState startGame() {
         try {
-            return texasRequestManager.sendMove(new Move("START",0),gameId);
+            return texasRequestManager.sendMove(new Move("START", 0), gameId);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -250,7 +253,7 @@ public class GameActivity extends AppCompatActivity
 
     private GameState sendPlay(int bet) {
         try {
-            return texasRequestManager.sendMove(new Move("BET", bet ),gameId);
+            return texasRequestManager.sendMove(new Move("BET", bet), gameId);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -269,7 +272,7 @@ public class GameActivity extends AppCompatActivity
     @Override
     public void onFinish(int amount) {
         try {
-            texasRequestManager.sendMove(new Move("BET",amount),gameId);
+            texasRequestManager.sendMove(new Move("BET", amount), gameId);
             turnOver();
         } catch (IOException e) {
             e.printStackTrace();
@@ -282,10 +285,10 @@ public class GameActivity extends AppCompatActivity
     }
 
 
-    private class RefreshPage extends AsyncTask<Void, Void,GameState> {
+    private class RefreshPage extends AsyncTask<Void, Void, GameState> {
 
         @Override
-        protected GameState doInBackground(Void ... voids) {
+        protected GameState doInBackground(Void... voids) {
             return ping();
         }
 
@@ -297,7 +300,10 @@ public class GameActivity extends AppCompatActivity
     }
 
     private void refreshPage(GameState state) {
-        if(checkTurn(state)) {
+        if (autoStart(state)) {
+            startGame();
+        }
+        if (checkTurn(state)) {
             enableButtons();
             stopRefresh();
             showYourTurnToast();
@@ -315,16 +321,26 @@ public class GameActivity extends AppCompatActivity
 
     }
 
-    private boolean checkTurn(GameState state) {
-        if(state.getState().equals("NOROUND"))
+    private boolean autoStart(GameState state) {
+        if (!state.getState().equals("NOROUND"))
             return false;
-        if(state.getCards()[0] == 0  || state.getCards()[1] == 0)
+        if (state.getUsers().length < 2)
+            return false;
+        if (!(state.getUsers()[0].getId() == state.getUserId()))
+            return false;
+        return true;
+    }
+
+    private boolean checkTurn(GameState state) {
+        if (state.getState().equals("NOROUND"))
+            return false;
+        if (state.getCards()[0] == 0 || state.getCards()[1] == 0)
             return false;
         return state.getUserId() == state.getTurnUserId();
     }
 
     private void timeTurn() {
-        turnTimer = new CountDownTimer(30000,1000) {
+        turnTimer = new CountDownTimer(30000, 1000) {
 
             @Override
             public void onTick(long millisUntilFinished) {
@@ -333,7 +349,7 @@ public class GameActivity extends AppCompatActivity
 
             @Override
             public void onFinish() {
-                if(fragment != null && fragment.isVisible())
+                if (fragment != null && fragment.isVisible())
                     fragment.dismiss();
                 try {
                     texasRequestManager.fold(gameId);
@@ -358,14 +374,14 @@ public class GameActivity extends AppCompatActivity
 //            mTurn.setImageResource(R.drawable.back_aqua);
 //            mRiver.setImageResource(R.drawable.back_aqua);
 //        } else {
-            int[] cards = state.getCards();
-            mCardOne.setImageResource(getResources().getIdentifier(cardToString(cards[0]),"drawable",getPackageName()));
-            mCardTwo.setImageResource(getResources().getIdentifier(cardToString(cards[1]),"drawable",getPackageName()));
-                mFlopOne.setImageResource(getResources().getIdentifier(cardToString(cards[2]),"drawable",getPackageName()));
-                mFlopTwo.setImageResource(getResources().getIdentifier(cardToString(cards[3]),"drawable",getPackageName()));
-                mFlopThree.setImageResource(getResources().getIdentifier(cardToString(cards[4]),"drawable",getPackageName()));
-                mTurn.setImageResource(getResources().getIdentifier(cardToString(cards[5]),"drawable",getPackageName()));
-                mRiver.setImageResource(getResources().getIdentifier(cardToString(cards[6]),"drawable",getPackageName()));
+        int[] cards = state.getCards();
+        mCardOne.setImageResource(getResources().getIdentifier(cardToString(cards[0]), "drawable", getPackageName()));
+        mCardTwo.setImageResource(getResources().getIdentifier(cardToString(cards[1]), "drawable", getPackageName()));
+        mFlopOne.setImageResource(getResources().getIdentifier(cardToString(cards[2]), "drawable", getPackageName()));
+        mFlopTwo.setImageResource(getResources().getIdentifier(cardToString(cards[3]), "drawable", getPackageName()));
+        mFlopThree.setImageResource(getResources().getIdentifier(cardToString(cards[4]), "drawable", getPackageName()));
+        mTurn.setImageResource(getResources().getIdentifier(cardToString(cards[5]), "drawable", getPackageName()));
+        mRiver.setImageResource(getResources().getIdentifier(cardToString(cards[6]), "drawable", getPackageName()));
 
 //        }
 
@@ -375,13 +391,13 @@ public class GameActivity extends AppCompatActivity
     private void notEnoughPlayersToast() {
         Toast.makeText(this,
                 "Not enough players to start"
-                ,Toast.LENGTH_SHORT).show();
+                , Toast.LENGTH_SHORT).show();
     }
 
     private void showYourTurnToast() {
         Toast.makeText(this,
                 "It's your turn!"
-                ,Toast.LENGTH_SHORT).show();
+                , Toast.LENGTH_SHORT).show();
     }
 
     private void stopRefresh() {
@@ -392,18 +408,18 @@ public class GameActivity extends AppCompatActivity
     private void setInfo(GameState state) {
         mGameInfo.setText(String.format(
                 "Pot: %d%nAmount to call: %d%nMinimum Bet: %d%nState: %s",
-                state.getTotalPot(),state.getAmountToCall(),state.getMinBet(),state.getState()));
+                state.getTotalPot(), state.getAmountToCall(), state.getMinBet(), state.getState()));
     }
 
     private void addUsers(User[] users) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         mUserListContainer.removeAllViews();
-        for(User user : users) {
-            TextView userView= new TextView(this);
+        for (User user : users) {
+            TextView userView = new TextView(this);
             userView.setLayoutParams(params);
             userView.setText(
-                    String.format("%s%nMoney: %d ", user.getUsername(),user.getMoney()));
+                    String.format("%s%nMoney: %d ", user.getUsername(), user.getMoney()));
             userView.setOnClickListener(new ShowUserInfo(user));
 
             mUserListContainer.addView(userView);
@@ -424,46 +440,50 @@ public class GameActivity extends AppCompatActivity
     }
 
     private final String cardToString(int num) {
-        if(num== 0)
+        if (num == 0)
             return cardBackColor;
-        if(num < 100 || num > 413 || num % 100 > 13)
+        if (num < 101 || num > 413 || num % 100 > 13)
             throw new IllegalArgumentException("Number isn't in the range");
-        int suit = num/100;
+        int suit = num / 100;
         int face = num % 100;
-        StringBuilder  sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         sb.append(SUIT.get(suit));
         sb.append(FACE.get(face));
-        return sb.toString();
+        String result = sb.toString();
+        Log.d(getLocalClassName(),"Processed card: "+ result);
+        return result;
     }
 
     private static class ShowUserInfo implements View.OnClickListener {
         private User user;
+
         ShowUserInfo(User user) {
             this.user = user;
         }
+
         @Override
         public void onClick(View v) {
             Toast.makeText(v.getContext(),
                     String.format("ID: %s%nUsername: %s%nMoney: %d%nEmail: %s",
-                    user.getId(),user.getUsername(),user.getMoney(),user.getEmail())
-                    ,Toast.LENGTH_SHORT).show();
+                            user.getId(), user.getUsername(), user.getMoney(), user.getEmail())
+                    , Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle saveInstanceState) {
         super.onSaveInstanceState(saveInstanceState);
-        saveInstanceState.putLong("game_id",gameId);
+        saveInstanceState.putLong("game_id", gameId);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         try {
-            texasRequestManager.room("leave",gameId);
-            if(turnTimer != null )
+            texasRequestManager.room("leave", gameId);
+            if (turnTimer != null)
                 turnTimer.cancel();
-            if(timer != null)
+            if (timer != null)
                 timer.cancel();
         } catch (IOException e) {
             e.printStackTrace();
