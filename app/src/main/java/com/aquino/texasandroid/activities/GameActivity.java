@@ -228,6 +228,7 @@ public class GameActivity extends AppCompatActivity
 
 
     private void turnOver() {
+        mTimeRemaining.setText("Not your turn");
         turnTimer.cancel();
         disableButtons();
         startTimer();
@@ -360,7 +361,6 @@ public class GameActivity extends AppCompatActivity
                     fragment.dismiss();
                 try {
                     texasRequestManager.fold(gameId);
-                    mTimeRemaining.setText("Not your turn");
                     turnOver();
                 } catch (IOException e) {
                     e.printStackTrace();

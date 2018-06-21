@@ -63,7 +63,7 @@ public class BetFragment extends DialogFragment {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                betListener.onFinish(numberPicker.getValue());
+                betListener.onFinish(numberPicker.getValue() * minimumBet);
                 dismiss();
             }
         });

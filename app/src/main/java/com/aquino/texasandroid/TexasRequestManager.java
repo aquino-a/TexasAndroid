@@ -112,7 +112,7 @@ public class TexasRequestManager {
 //        String json = objectMapper.writeValueAsString(move);
         return objectMapper.readValue(getResponse(path,"POST", move),GameState.class);
     }
-    public GameState pingServer(long gameId) throws IOException {
+    public GameState pingServer(long gameId) throws IOException, NullPointerException {
         String path = String.format("/games/%d",gameId);
         return objectMapper.readValue(getResponse(path,"GET",null),GameState.class);
     }

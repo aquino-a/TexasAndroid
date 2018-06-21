@@ -10,12 +10,14 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aquino.texasandroid.R;
 import com.aquino.texasandroid.TexasRequestManager;
 import com.aquino.texasandroid.fragments.GameListFragment;
 import com.aquino.texasandroid.model.GameInfo;
 import com.aquino.texasandroid.model.GameList;
+import com.aquino.texasandroid.model.GameState;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -91,8 +93,7 @@ public class GamesActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                      long gameId = texasRequestManager.createNewGame();
-                     refreshList();
-                    //joinGame(gameId);
+                     joinGame(gameId);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -113,9 +114,22 @@ public class GamesActivity extends AppCompatActivity {
     }
 
     private void joinGame(long gameId) {
+        try {
+            texasRequestManager.pingServer(gameId);
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+            cannotJoinGameToast();
+            return;
+        }
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra(GAME_ID_EXTRA, gameId);
         startActivity(intent);
+    }
+
+    private void cannotJoinGameToast() {
+        Toast.makeText(this,
+                "Couldn't join game"
+                , Toast.LENGTH_SHORT).show();
     }
 
 //    private class OpenGameClickListener implements View.OnClickListener {
