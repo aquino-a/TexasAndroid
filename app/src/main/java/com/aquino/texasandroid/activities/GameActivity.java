@@ -1,5 +1,6 @@
 package com.aquino.texasandroid.activities;
 
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
@@ -122,15 +123,6 @@ public class GameActivity extends AppCompatActivity
         startTimer();
     }
 
-//    private void setupRefresh() {
-//        timer = new Timer();
-//        refresh = () -> {
-//            refresher = new RefreshPage();
-//            refresher.execute();
-//        };
-//        startTimer();
-//    }
-
     private void startTimer() {
         timer = new Timer();
 
@@ -144,7 +136,7 @@ public class GameActivity extends AppCompatActivity
             public void run() {
                 runPingInterval();
             }
-        }, 0, 5000);
+        }, 0, 2000);
     }
 
     private void runPingInterval() {
@@ -311,6 +303,12 @@ public class GameActivity extends AppCompatActivity
         if (autoStart(state)) {
             startGame();
         }
+
+        if(state.equals("ENDROUND")){
+            if(isWinner(state)) {
+                showToast("You won!");
+            } else showToast("You lost!");
+        }
         if (checkTurn(state)) {
             enableButtons();
             stopRefresh();
@@ -318,7 +316,7 @@ public class GameActivity extends AppCompatActivity
             timeTurn();
         }
         //user list
-        addUsers(state.getUsers());
+        addUsers(state);
 
         //info
         setInfo(state);
@@ -328,6 +326,17 @@ public class GameActivity extends AppCompatActivity
 
 
     }
+
+    private void showToast(String str) {
+        Toast.makeText(this,
+                str
+                , Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean isWinner(GameState state) {
+        return state.getUserId() == state.getRoundWinner();
+    }
+
 
     private boolean autoStart(GameState state) {
         if (!state.getState().equals("NOROUND"))
@@ -372,15 +381,6 @@ public class GameActivity extends AppCompatActivity
 
     private void setCards(GameState state) {
         String gameState = state.getState();
-//        if(gameState.equals("NOROUND") || gameState.equals("ENDROUND")) {
-//            mCardOne.setImageResource(R.drawable.back_aqua);
-//            mCardTwo.setImageResource(R.drawable.back_aqua);
-//            mFlopOne.setImageResource(R.drawable.back_aqua);
-//            mFlopTwo.setImageResource(R.drawable.back_aqua);
-//            mFlopThree.setImageResource(R.drawable.back_aqua);
-//            mTurn.setImageResource(R.drawable.back_aqua);
-//            mRiver.setImageResource(R.drawable.back_aqua);
-//        } else {
         int[] cards = state.getCards();
         mCardOne.setImageResource(getResources().getIdentifier(cardToString(cards[0]), "drawable", getPackageName()));
         mCardTwo.setImageResource(getResources().getIdentifier(cardToString(cards[1]), "drawable", getPackageName()));
@@ -389,9 +389,6 @@ public class GameActivity extends AppCompatActivity
         mFlopThree.setImageResource(getResources().getIdentifier(cardToString(cards[4]), "drawable", getPackageName()));
         mTurn.setImageResource(getResources().getIdentifier(cardToString(cards[5]), "drawable", getPackageName()));
         mRiver.setImageResource(getResources().getIdentifier(cardToString(cards[6]), "drawable", getPackageName()));
-
-//        }
-
 
     }
 
@@ -418,7 +415,8 @@ public class GameActivity extends AppCompatActivity
                 state.getTotalPot(), state.getAmountToCall(), state.getMinBet(), state.getState()));
     }
 
-    private void addUsers(User[] users) {
+    private void addUsers(GameState state) {
+        User[] users = state.getUsers();
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         mUserListContainer.removeAllViews();
@@ -428,7 +426,8 @@ public class GameActivity extends AppCompatActivity
             userView.setText(
                     String.format("%s%nMoney: %d ", user.getUsername(), user.getMoney()));
             userView.setOnClickListener(new ShowUserInfo(user));
-
+            if(state.getTurnUserId() == user.getId())
+                userView.setBackgroundColor(Color.YELLOW);
             mUserListContainer.addView(userView);
         }
 
