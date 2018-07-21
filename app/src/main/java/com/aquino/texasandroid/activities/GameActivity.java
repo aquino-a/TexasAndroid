@@ -6,6 +6,7 @@ import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -191,13 +192,8 @@ public class GameActivity extends AppCompatActivity
         mCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    texasRequestManager.sendMove(
-                            new Move("BET", lastState.getAmountToCall()), gameId);
+                    sendPlay(lastState.getAmountToCall());
                     turnOver();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         });
         disableButtons();
@@ -245,7 +241,7 @@ public class GameActivity extends AppCompatActivity
     private GameState startGame() {
         try {
             return texasRequestManager.sendMove(new Move("START", 0), gameId);
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             e.printStackTrace();
             return null;
         }
@@ -253,7 +249,10 @@ public class GameActivity extends AppCompatActivity
 
     private GameState sendPlay(int bet) {
         try {
-            return texasRequestManager.sendMove(new Move("BET", bet), gameId);
+            GameState state = ping();
+            if(!state.getState().equals("NOROUND"))
+                return texasRequestManager.sendMove(new Move("BET", bet), gameId);
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -271,12 +270,8 @@ public class GameActivity extends AppCompatActivity
 
     @Override
     public void onFinish(int amount) {
-        try {
-            texasRequestManager.sendMove(new Move("BET", amount), gameId);
-            turnOver();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                sendPlay(amount);
+                turnOver();
     }
 
     @Override
@@ -304,7 +299,7 @@ public class GameActivity extends AppCompatActivity
             startGame();
         }
 
-        if(state.equals("ENDROUND")){
+        if(state.getState().equals("ENDROUND")){
             if(isWinner(state)) {
                 showToast("You won!");
             } else showToast("You lost!");
@@ -328,9 +323,12 @@ public class GameActivity extends AppCompatActivity
     }
 
     private void showToast(String str) {
+        Toast toast =
         Toast.makeText(this,
                 str
-                , Toast.LENGTH_SHORT).show();
+                , Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER_HORIZONTAL,0,-300);
+        toast.show();
     }
 
     private boolean isWinner(GameState state) {
@@ -399,9 +397,7 @@ public class GameActivity extends AppCompatActivity
     }
 
     private void showYourTurnToast() {
-        Toast.makeText(this,
-                "It's your turn!"
-                , Toast.LENGTH_SHORT).show();
+        showToast("It's your turn!");
     }
 
     private void stopRefresh() {

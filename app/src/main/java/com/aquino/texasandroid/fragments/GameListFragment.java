@@ -11,13 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aquino.texasandroid.R;
+import com.aquino.texasandroid.TexasRequestManager;
 import com.aquino.texasandroid.activities.GameActivity;
 import com.aquino.texasandroid.activities.GamesActivity;
 import com.aquino.texasandroid.model.GameInfo;
 import com.aquino.texasandroid.model.GameList;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,12 +32,14 @@ public class GameListFragment extends Fragment {
 
     private GameAdapter mGameAdapter;
     private RecyclerView mRecyclerView;
+    private TexasRequestManager mTexasRequestManager;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_games_list,container,false);
+        mTexasRequestManager = TexasRequestManager.getSetupInstance();
         setupView(view);
         updateUI();
 
@@ -61,6 +66,12 @@ public class GameListFragment extends Fragment {
         startActivity(intent);
     }
 
+    private void cannotJoinGameToast() {
+        Toast.makeText(getActivity(),
+                "Couldn't join game"
+                , Toast.LENGTH_SHORT).show();
+    }
+
     private class GameHolder extends RecyclerView.ViewHolder {
 
         private TextView mIdTextView, mTitleTextView;
@@ -70,7 +81,12 @@ public class GameListFragment extends Fragment {
             super(inflater.inflate(
                     R.layout.fragment_games_list_item,parent,false));
             itemView.setOnClickListener(v -> {
-                joinGame(mGameInfo.getGameId());
+                try{
+                    mTexasRequestManager.pingServer(mGameInfo.getGameId());
+                    joinGame(mGameInfo.getGameId());
+                } catch (NullPointerException| IOException e) {
+                    cannotJoinGameToast();
+                }
             });
             mIdTextView = itemView.findViewById(R.id.game_id);
             mTitleTextView = itemView.findViewById(R.id.game_title);

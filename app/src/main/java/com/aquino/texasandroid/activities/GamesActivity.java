@@ -114,13 +114,6 @@ public class GamesActivity extends AppCompatActivity {
     }
 
     private void joinGame(long gameId) {
-        try {
-            texasRequestManager.pingServer(gameId);
-        } catch (IOException | NullPointerException e) {
-            e.printStackTrace();
-            cannotJoinGameToast();
-            return;
-        }
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra(GAME_ID_EXTRA, gameId);
         startActivity(intent);
